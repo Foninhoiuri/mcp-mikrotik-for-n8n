@@ -1,52 +1,89 @@
-# MikroTik MCP
+# MikroTik MCP for n8n
 
-[![MCP Toplist](https://mcptoplist.com/badge/io.github.jeff-nasseri%2Fmikrotik-mcp.svg)](https://mcptoplist.com/server/io.github.jeff-nasseri%2Fmikrotik-mcp)
+Fork do [mikrotik-mcp](https://github.com/jeff-nasseri/mikrotik-mcp) configurado para rodar como container Docker com transporte **SSE**, pronto para integração com **n8n**.
 
-<!-- mcp-name: io.github.jeff-nasseri/mikrotik-mcp -->
+## O que muda neste fork
 
-[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/jeff-nasseri-mikrotik-mcp-badge.png)](https://mseep.ai/app/jeff-nasseri-mikrotik-mcp)
+- **Transporte SSE por padrão** — o container já sobe em modo SSE (HTTP), sem precisar configurar
+- **Docker Compose pronto** — aponte o Portainer para este repo e deploy
+- **Log configurável** — variável `LOG_LEVEL` para debug sem rebuild
+- **Documentação em PT-BR** — instruções completas em [README-N8N.md](README-N8N.md)
 
-[![Website](https://img.shields.io/badge/website-mikrotik--mcp.com-007ACC?style=flat-square&logo=googlechrome&logoColor=white)](https://www.mikrotik-mcp.com/)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/jeff-nasseri/mikrotik-mcp/publish.yml?branch=master&label=build&style=flat-square&color=%23007ACC)](https://github.com/jeff-nasseri/mikrotik-mcp/actions/workflows/publish.yml)
-[![Tests](https://img.shields.io/github/actions/workflow/status/jeff-nasseri/mikrotik-mcp/publish.yml?branch=master&label=tests&style=flat-square&color=%2300C853)](https://github.com/jeff-nasseri/mikrotik-mcp/actions/workflows/publish.yml)
-[![MIT License](https://img.shields.io/github/license/jeff-nasseri/mikrotik-mcp?style=flat-square&color=%23FF6B35)](https://github.com/jeff-nasseri/mikrotik-mcp/blob/master/LICENSE)
+## Arquitetura
 
-## Overview
+```
+┌─────────────────┐     HTTP/SSE      ┌─────────────────────┐     SSH      ┌──────────────┐
+│    n8n           │ ──────────────►   │  mikrotik-mcp:8000  │ ──────────►  │  MikroTik    │
+│  (AI Agent)      │   porta 3000     │  (Docker Container) │  porta 22   │  Router      │
+└─────────────────┘                   └─────────────────────┘              └──────────────┘
+```
 
-MikroTik MCP provides a bridge between AI assistants and MikroTik RouterOS devices. It allows AI assistants to interact with MikroTik routers through natural language requests, executing commands like managing VLANs, configuring firewall rules, handling DNS settings, and more.
+## Quick Start
 
-## Demo Videos
+### 1. Deploy via Portainer (recomendado)
 
-### Claude Desktop
+1. **Stacks → Add Stack**
+2. **Repository**: `https://github.com/Foninhoiuri/mcp-mikrotik-for-n8n.git`
+3. **Compose path**: `docker-compose.yml`
+4. Ajuste as variáveis de ambiente (IP, usuário, senha do MikroTik)
+5. **Deploy the stack**
 
-https://github.com/user-attachments/assets/24fadcdc-c6a8-48ed-90ac-74baf8f94b59
+### 2. Deploy manual
 
-### Inspector
+```bash
+git clone https://github.com/Foninhoiuri/mcp-mikrotik-for-n8n.git
+cd mcp-mikrotik-for-n8n
 
-https://github.com/user-attachments/assets/e0301ff2-8144-4503-83d0-48589d95027d
+# Edite o docker-compose.yml com suas credenciais
+docker compose up -d
+```
 
-### Inventory
-> [!NOTE]
-> Since MikroTik MCP version `0.14.0`, the MikroTik MCP will allow you to manage multiple MikroTik devices within your fleet structure. The following video simply shows how to use the inventory of MikroTik devices to let LLMs talk with your MikroTik devices.
+### 3. Conectar no n8n
 
-https://github.com/user-attachments/assets/185b2c39-8f55-4f26-a74c-2ac459ad38f5
+1. No n8n, vá em **Settings → MCP Servers**
+2. Transporte: **SSE**
+3. URL: `http://IP_DO_SEU_SERVIDOR:3000/sse`
 
-## Documentation
+As ferramentas do MikroTik aparecem automaticamente no AI Agent.
 
-📚 **[Full Documentation](docs/README.md)** - Complete guides, API reference, and examples
+## Variáveis de Ambiente
 
-> 🌐 **Prefer to read online?** The same documentation is also published at **[www.mikrotik-mcp.com](https://www.mikrotik-mcp.com/)** ([docs](https://www.mikrotik-mcp.com/docs/)) — an optional, web-friendly way to explore the project while reviewing the repo.
+| Variável | Padrão | Descrição |
+|----------|--------|-----------|
+| `MIKROTIK_HOST` | `192.168.88.1` | IP do roteador MikroTik |
+| `MIKROTIK_USERNAME` | `admin` | Usuário SSH |
+| `MIKROTIK_PASSWORD` | *(vazio)* | Senha SSH |
+| `MIKROTIK_PORT` | `22` | Porta SSH |
+| `MIKROTIK_MCP__TRANSPORT` | `sse` | Transporte: `sse`, `streamable-http`, `stdio` |
+| `MIKROTIK_MCP__ALLOWED_HOSTS` | *(vazio)* | Use `*` para rede local |
+| `LOG_LEVEL` | `INFO` | Nível de log: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 
-### Quick Links
+## Ferramentas disponíveis
 
-- **[Installation Guide](docs/getting-started/installation.md)** - Get started with MikroTik MCP
-- **[Testing Guide](docs/getting-started/testing.md)** - Run integration tests
-- **[Claude Desktop Integration](docs/integrations/claude-desktop.md)** - Configure for Claude Desktop
-- **[MCP Inspector](docs/integrations/inspector.md)** - Interactive testing tool
-- **[Contributing Guide](docs/contributing.md)** - Help improve MikroTik MCP
-- **[Articles](docs/articles/README.md)** - Learning resources and tutorials
-- **[Diagrams](docs/diagrams/README.md)** - Architecture and design diagrams (draw.io)
+Todas as 173+ tools do projeto original, incluindo:
 
-## License
+- 🔥 **Firewall** — regras de filter e NAT
+- 🌐 **DNS** — registros estáticos e configurações
+- 📡 **DHCP** — leases e configuração de servidor
+- 🔒 **WireGuard** — peers e interfaces VPN
+- 🖧 **Interfaces** — VLANs, bridges, ethernet
+- 📊 **Queues** — controle de banda
+- 🗂️ **Backup** — export e backup do sistema
+- 👥 **Usuários** — gerenciamento de contas
+- 📋 **Logs** — consulta de logs do sistema
+- 🛣️ **Rotas** — tabela de roteamento
 
-This MCP server is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License. For more details, please see the LICENSE file in the project repository.
+## Documentação completa
+
+📚 Veja [README-N8N.md](README-N8N.md) para instruções detalhadas incluindo:
+- Deploy via Portainer
+- Configuração multi-device (vários MikroTiks)
+- Troubleshooting
+
+## Créditos
+
+Baseado no projeto [mikrotik-mcp](https://github.com/jeff-nasseri/mikrotik-mcp) por [Jeff Nasseri](https://github.com/jeff-nasseri).
+
+## Licença
+
+MIT License — veja [LICENSE](LICENSE).
