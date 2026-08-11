@@ -57,6 +57,7 @@ As ferramentas do MikroTik aparecem automaticamente no AI Agent.
 | `MIKROTIK_MCP__TRANSPORT` | `sse` | Transporte: `sse`, `streamable-http`, `stdio` |
 | `MIKROTIK_MCP__ALLOWED_HOSTS` | *(vazio)* | Use `*` para rede local |
 | `LOG_LEVEL` | `INFO` | Nível de log: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `N8N_NETWORK_NAME` | `n8n_default` | Nome da rede Docker do seu n8n para comunicação interna |
 
 ## Ferramentas disponíveis
 
