@@ -107,6 +107,13 @@ def main():
     """
     Entry point for the MCP MikroTik server when run as a command-line program.
     """
+    # Configurable log level via LOG_LEVEL env var (default: INFO).
+    # Useful for debugging in Docker/Portainer without rebuilding.
+    log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
+    logging.basicConfig(
+        level=getattr(logging, log_level, logging.INFO),
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
     logger = logging.getLogger(__name__)
 
     try:

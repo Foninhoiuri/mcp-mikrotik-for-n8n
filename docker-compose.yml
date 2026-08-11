@@ -3,7 +3,6 @@ version: '3.8'
 services:
   mikrotik-mcp:
     build: .
-    image: mikrotik-mcp-sse:latest
     container_name: mcp_mikrotik
     restart: unless-stopped
     ports:
@@ -26,6 +25,10 @@ services:
       - MIKROTIK_USERNAME=admin
       - MIKROTIK_PASSWORD=changeme
       - MIKROTIK_PORT=22
+
+      # ── Logging ──────────────────────────────────────────────────────
+      # Níveis: DEBUG, INFO, WARNING, ERROR. Use DEBUG para troubleshooting.
+      - LOG_LEVEL=INFO
 
       # ── Multi-device (opcional) ─────────────────────────────────────
       # Para gerenciar vários MikroTik, descomente e monte o inventory:
