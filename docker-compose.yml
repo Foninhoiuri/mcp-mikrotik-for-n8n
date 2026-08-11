@@ -6,11 +6,19 @@ services:
     container_name: mcp_mikrotik
     restart: unless-stopped
     ports:
-      - "3000:${MIKROTIK_MCP__PORT:-8000}"
-    env_file:
-      - .env
+      - "3000:8000"
+    environment:
+      - MIKROTIK_MCP__TRANSPORT=sse
+      - MIKROTIK_MCP__HOST=0.0.0.0
+      - MIKROTIK_MCP__PORT=8000
+      - MIKROTIK_MCP__ALLOWED_HOSTS=*
+      - MIKROTIK_HOST=${MIKROTIK_HOST:-192.168.88.1}
+      - MIKROTIK_USERNAME=${MIKROTIK_USERNAME:-admin}
+      - MIKROTIK_PASSWORD=${MIKROTIK_PASSWORD:-changeme}
+      - MIKROTIK_PORT=${MIKROTIK_PORT:-22}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:${MIKROTIK_MCP__PORT:-8000}/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8000/health"]
       interval: 30s
       timeout: 5s
       retries: 3
