@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mikrotik-mcp:
-    image: mikrotik-mcp-sse:latest
+    image: ghcr.io/foninhoiuri/mcp-mikrotik-for-n8n:latest
     restart: unless-stopped
     ports:
       - "3000:8000"
