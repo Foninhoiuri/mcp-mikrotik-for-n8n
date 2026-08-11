@@ -2,8 +2,7 @@ version: '3.8'
 
 services:
   mikrotik-mcp:
-    build: .
-    container_name: mcp_mikrotik
+    image: mikrotik-mcp-sse:latest
     restart: unless-stopped
     ports:
       - "3000:8000"
