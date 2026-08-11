@@ -16,12 +16,6 @@ services:
       - MIKROTIK_PASSWORD=${MIKROTIK_PASSWORD:-changeme}
       - MIKROTIK_PORT=${MIKROTIK_PORT:-22}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     networks:
       - n8n_network
 
