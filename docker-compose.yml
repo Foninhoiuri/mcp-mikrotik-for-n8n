@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mikrotik-mcp:
+    build: .
+    image: mikrotik-mcp-sse:latest
+    container_name: mcp_mikrotik
+    restart: unless-stopped
+    ports:
+      - "3000:8000"
+    environment:
+      # ── Transporte MCP ──────────────────────────────────────────────
+      # O container já usa SSE como padrão. Essas vars são opcionais,
+      # mas ficam explícitas para documentação.
+      - MIKROTIK_MCP__TRANSPORT=sse
+      - MIKROTIK_MCP__HOST=0.0.0.0
+      - MIKROTIK_MCP__PORT=8000
+
+      # Desabilita proteção DNS-rebinding para uso em rede local.
+      # Em produção exposta à internet, substitua por seu domínio.
+      - MIKROTIK_MCP__ALLOWED_HOSTS=*
+
+      # ── Conexão MikroTik (single device) ────────────────────────────
+      # Ajuste para o IP/credenciais do seu MikroTik.
+      - MIKROTIK_HOST=192.168.88.1
+      - MIKROTIK_USERNAME=admin
+      - MIKROTIK_PASSWORD=changeme
+      - MIKROTIK_PORT=22
+
+      # ── Multi-device (opcional) ─────────────────────────────────────
+      # Para gerenciar vários MikroTik, descomente e monte o inventory:
+      # - MIKROTIK_INVENTORY_FILE=/config/inventory.yaml
+
+    # volumes:
+    #   # Descomente para multi-device inventory:
+    #   - ./inventory.yaml:/config/inventory.yaml:ro
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

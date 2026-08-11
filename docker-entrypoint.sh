@@ -35,7 +35,7 @@ usage() {
     exit 1
 }
 
-MIKROTIK_MCP__TRANSPORT="${MIKROTIK_MCP__TRANSPORT:-stdio}"
+MIKROTIK_MCP__TRANSPORT="${MIKROTIK_MCP__TRANSPORT:-sse}"
 
 while [ $# -gt 0 ]; do
     case $1 in
